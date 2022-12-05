@@ -29,7 +29,7 @@ class handlerClient(threading.Thread):
             self.active = False
           s.connect((self.HOST, self.PORT))
           s.sendall(f"{self.clientID}-{data}".encode())
-          resposta = s.recv(1024).decode()
+          resposta = s.recv(1024).decode().replace('\n', '')
           print(f"{resposta}")
           
       except Exception as e:
