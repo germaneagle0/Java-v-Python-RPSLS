@@ -26,3 +26,4 @@ Utilizando Sockets, podemos communicar entre linguagens de programação diferen
 Observação:
 - O seu nome é aleatorio
 - A qualquer momento, se escrever 'exit' terminará o cliente, além disso pode inclusive terminar o servidor dependendo do contexto em que usa.
+- Para ver os resultados passados, a qualquer momento pode escrever "results" no terminal e obterá os histórico de partidas acumulado no servidor para aquele usuário.
