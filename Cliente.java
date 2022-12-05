@@ -18,9 +18,6 @@ public class Cliente {
         Scanner scan = new Scanner(System.in);
         while (!line.equals("exit")) {
             try {
-                Socket socket = new Socket(host, port);
-                PrintStream out = new PrintStream( socket.getOutputStream() );
-                BufferedReader in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
                 while(true) {
                     System.out.print("> ");
                     line = scan.nextLine();
@@ -30,13 +27,11 @@ public class Cliente {
                     System.out.println("Mensagem invalida, tente novamente!");
                 }
                 String mensagemFinal = this.clientID + '-' + line;
+                Socket socket = new Socket(host, port);
+                PrintStream out = new PrintStream( socket.getOutputStream() );
+                BufferedReader in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
                 out.print(mensagemFinal);
-                String response = "";
-                String get_response = in.readLine();
-                while(get_response != null) {
-                    response = response + get_response;
-                    get_response = in.readLine();
-                }
+                String response = in.readLine();
                 System.out.println(response);
                 in.close();
                 out.close();
@@ -64,7 +59,7 @@ public class Cliente {
     }
 
     public static String getRandom(int max) {
-        return String.valueOf((int)Math.random() * max + 1);
+        return String.valueOf((int)(Math.random() * max + 1));
     }
 
     public static void main(String args[])
