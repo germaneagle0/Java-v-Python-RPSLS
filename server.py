@@ -72,7 +72,7 @@ class handlerServer(threading.Thread):
     
     if (messagem == 'exit'):
       if (self.state == State.WAITING_FOR_CONNECTION):
-        conn.sendall("Server - Disconnected".encode())
+        conn.sendall("Server - Disconnected\n".encode())
         self.active = False
         return
       if (self.state == State.GAME_OVER):
@@ -82,38 +82,39 @@ class handlerServer(threading.Thread):
         if (self.secondPlayerIP == ''):
           self.state=State.WAITING_FOR_CONNECTION
           self.resetVariables()
-          conn.sendall("Server - Disconnected".encode())
+          conn.sendall("Server - Disconnected\n".encode())
         else: 
           self.state=State.GAME_OVER
         return
       elif (self.secondPlayerIP == addr):
         self.state=State.GAME_OVER
       else:
-        conn.sendall(f"{addr} please wait for game to finish".encode())
+        conn.sendall(f"{addr} please wait for game to finish\n".encode())
       
     if self.state == State.WAITING_FOR_CONNECTION:
       if messagem == "connect":
         self.firstPlayerIP = addr
         self.state = State.WAITING_FOR_SECOND_PLAYER
-        conn.send(f"{addr} connected as player 1".encode())
+        conn.send(f"{addr} connected as player 1\n".encode())
       else:
-        conn.send(f"{addr} to connect, send message 'connect'".encode())
+        conn.send(f"{addr} to connect, send message 'connect'\n".encode())
     
     if self.state == State.WAITING_FOR_SECOND_PLAYER:
       if addr != self.firstPlayerIP:
         if messagem == "connect":
           self.secondPlayerIP = addr
           self.state = State.WAITING_FOR_MOVES
-          conn.send(f"{addr} connected as player 2".encode())
+          conn.send(f"{addr} connected as player 2\n".encode())
+          return
         else:
-          conn.send(f"{addr} to connect, send message 'connect'".encode())
+          conn.send(f"{addr} to connect, send message 'connect'\n".encode())
       else:
-        conn.send(f"{addr} waiting for player 2 to enter".encode())
+        conn.send(f"{addr} waiting for player 2 to enter\n".encode())
       
     if self.state == State.WAITING_FOR_MOVES:
       if addr == self.firstPlayerIP:
         if self.firstPlayerMove != Moves.No_Move:
-          conn.send("waiting for player 2".encode())
+          conn.send("waiting for player 2\n".encode())
         elif (messagem == "scissors") or (messagem == "paper") or (messagem == "rock") or (messagem == "lizard") or (messagem == "spock"):
           self.firstPlayerMove = Moves[messagem.capitalize()]
           print(f"Server - {addr} played {self.firstPlayerMove.name}")
@@ -121,12 +122,12 @@ class handlerServer(threading.Thread):
             self.result = self.determineResult()
             print(f"Server - Result {self.firstPlayerIP} vs {self.secondPlayerIP} \n\t{self.versus()} \n\t{self.result.name}")
             self.state = State.GAME_OVER
-          conn.send(f"move received by {addr}".encode())
+          conn.send(f"move received by {addr}\n".encode())
         else:
-          conn.send(f"invalid move by {addr}".encode())     
+          conn.send(f"invalid move by {addr}\n".encode())     
       elif addr == self.secondPlayerIP:
         if self.secondPlayerMove != Moves.No_Move:
-          conn.send("waiting for player 1".encode())
+          conn.send("waiting for player 1\n".encode())
         elif (messagem == "scissors") or (messagem == "paper") or (messagem == "rock") or (messagem == "lizard") or (messagem == "spock"):
           self.secondPlayerMove = Moves[messagem.capitalize()]
           print(f"Server - {addr} played {self.secondPlayerMove.name}")
@@ -134,40 +135,40 @@ class handlerServer(threading.Thread):
             self.result = self.determineResult()
             print(f"Server - Result {self.firstPlayerIP} vs {self.secondPlayerIP} \n\t{self.versus()}\n\t{self.result.name}")
             self.state = State.GAME_OVER
-          conn.send(f"move received by {addr}".encode())
+          conn.send(f"move received by {addr}\n".encode())
         else:
-          conn.send(f"invalid move by {addr}".encode())
+          conn.send(f"invalid move by {addr}\n".encode())
       else:
-        conn.send(f"{addr} you are not a player".encode())
+        conn.send(f"{addr} you are not a player\n".encode())
 
     elif self.state == State.GAME_OVER:
       if (messagem == "get"):
         if addr == self.firstPlayerIP:
           self.firstPlayerReceived = True
           if self.result == Result.DRAW:
-            conn.send((f"{addr} draw ({self.versus()})").encode())
+            conn.send((f"{addr} draw ({self.versus()})\n").encode())
           elif self.result == Result.PLAYER1:
-            conn.send((f"{addr} you won ({self.versus()})").encode())
+            conn.send((f"{addr} you won ({self.versus()})\n").encode())
           elif self.result == Result.PLAYER2:
-            conn.send((f"{addr} you lost ({self.versus()})").encode())
+            conn.send((f"{addr} you lost ({self.versus()})\n").encode())
           else:
-            conn.send(f"{addr} server exiting".encode())
+            conn.send(f"{addr} server exiting\n".encode())
         elif addr == self.secondPlayerIP:
           self.secondPlayerReceived = True
           if self.result == Result.DRAW:
-            conn.send((f"{addr} draw ({self.versus()})").encode())
+            conn.send((f"{addr} draw ({self.versus()})\n").encode())
           elif self.result == Result.PLAYER1:
-            conn.send((f"{addr} you lost ({self.versus()})").encode())
+            conn.send((f"{addr} you lost ({self.versus()})\n").encode())
           elif self.result == Result.PLAYER2:
-            conn.send((f"{addr} you won ({self.versus()})").encode())
+            conn.send((f"{addr} you won ({self.versus()})\n").encode())
           else:
-            conn.send(f"{addr} server exiting".encode())
+            conn.send(f"{addr} server exiting\n".encode())
         else:
-          conn.send(f"{addr} you are not a player".encode())
+          conn.send(f"{addr} you are not a player\n".encode())
         if (self.firstPlayerReceived and self.secondPlayerReceived):
           self.resetVariables()
       else:
-        conn.send(f"{addr} to get result, send message 'get'".encode())
+        conn.send(f"{addr} to get result, send message 'get'\n".encode())
   
   def run(self):
     print("Server - Recebendo mensagens no PORT " + str(self.PORT))
