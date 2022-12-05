@@ -1,6 +1,7 @@
 from socket import *
 import threading
 from enum import Enum
+import sqlite3
 
 class Result(Enum):
   DRAW = 1
@@ -64,11 +65,66 @@ class handlerServer(threading.Thread):
     self.firstPlayerReceived = False
     self.secondPlayerReceived = False
   
+  def createBanco(self):
+    try:
+        sqliteConnection = sqlite3.connect('banco_de_dados.db')
+        c = sqliteConnection.cursor() 
+        c.execute("""create table if not exists resultados (
+                     rodada integer primary key autoincrement ,
+                     player1 text,
+                     player2 text,
+                     resultado text)""")
+        sqliteConnection.commit()
+        c.close()
+    except sqlite3.Error as error:
+        print("Error while connecting to sqlite", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+  
+  def saveResult(self):
+    self.createBanco()
+    try:
+        sqliteConnection = sqlite3.connect('banco_de_dados.db')
+        c = sqliteConnection.cursor() 
+        data = [(self.firstPlayerIP, self.secondPlayerIP , self.result.name)]
+        insertstring = "INSERT INTO resultados (player1, player2, resultado) VALUES (?, ?, ?)"
+        c.executemany(insertstring, data)
+        sqliteConnection.commit()
+        c.close()
+    except sqlite3.Error as error:
+        print("Error while inserting to sqlite", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+    
+    
+  def getResults(self, addr):
+    self.createBanco()
+    text = ''
+    try:
+      sqliteConnection = sqlite3.connect('banco_de_dados.db')
+      c = sqliteConnection.cursor() 
+      c.execute("select * from resultados where player1 = '"+str(addr)+"' or player2 = '"+str(addr)+"'")
+      lista = c.fetchall()
+      for (item) in lista:
+        text = f"{text} || {item[0]} - {item[1]} vs {item[2]} - Result {item[3]}"
+      c.close()
+    except sqlite3.Error as error:
+      print("Error while inserting to sqlite", error)
+    finally:
+      if sqliteConnection:
+          sqliteConnection.close()
+      return text
   def handleRequest(self, conn):
     messagem = str(conn.recv(1024).decode()).lower()
     dados = messagem.split('-')
     addr = dados[0] ## id do cliente
     messagem = dados[1]
+    
+    if (messagem == 'results'):
+      conn.sendall(self.getResults(addr).encode())
+      return
     
     if (messagem == 'exit'):
       if (self.state == State.WAITING_FOR_CONNECTION):
@@ -120,6 +176,7 @@ class handlerServer(threading.Thread):
           print(f"Server - {addr} played {self.firstPlayerMove.name}")
           if (self.secondPlayerMove != Moves.No_Move):
             self.result = self.determineResult()
+            self.saveResult()
             print(f"Server - Result {self.firstPlayerIP} vs {self.secondPlayerIP} \n\t{self.versus()} \n\t{self.result.name}")
             self.state = State.GAME_OVER
           conn.send(f"move received by {addr}\n".encode())
@@ -133,6 +190,7 @@ class handlerServer(threading.Thread):
           print(f"Server - {addr} played {self.secondPlayerMove.name}")
           if (self.firstPlayerMove != Moves.No_Move):
             self.result = self.determineResult()
+            self.saveResult()
             print(f"Server - Result {self.firstPlayerIP} vs {self.secondPlayerIP} \n\t{self.versus()}\n\t{self.result.name}")
             self.state = State.GAME_OVER
           conn.send(f"move received by {addr}\n".encode())
