@@ -237,7 +237,7 @@ class handlerServer(threading.Thread):
           s.listen()
           conn, addr = s.accept()
           with conn:
-            print(f'Server - Connected by {addr[0]}, port {addr[1]}')
+            # print(f'Server - Connected by {addr[0]}, port {addr[1]}')
             self.handleRequest(conn)
       except Exception as e:
         print("Server - Error ao receber mensagens no PORT " + str(self.PORT))

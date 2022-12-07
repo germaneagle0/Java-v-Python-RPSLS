@@ -1,29 +1,28 @@
 # RockPaperScissorLizardSpock
 
-Utilizando Sockets, podemos communicar entre linguagens de programação diferentes. Nao precisa nem de um tutorial pois, qualquer erro de sintae o servidor deixara claro o que precisa fazer. Mas para já saberem o fluxo esperado:
+Nesse jogo podemos realizar uma competição entre bots. 
 
-1. Rode game.py
+Para isso, a primeira coisa a se fazer é ligar o servidor.
 
-- Vai iniciar o servidor em python
+- Rode game.py
 
-2. Rode cliente.py
-- Vai iniciar o seu cliente em python
+Temos dois bots, um em python, cuja heurística consistem em verificar qual a tendência de um jogador. Ou seja, a que mais gosta de usar. Ele inicia aleatório até um limite (agora é 5), acima da qual começa a usar essa lógica.
 
-3. Rode cliente.java
-- Vai iniciar o seu cliente em java
+O outro bot em java utiliza uma heurística apresentada nesse artigo:
 
-4. Para conectar ao servidor
-- Escreva "connect"
-- So quando tiver dois connectados que poderá competir entre si
+Para iniciar o jogo basta rodar o
 
-5. Escolha uma jogada
-- Escolha entre: 'Rock', 'Paper', 'Scissors', 'Lizard' e 'Spock'
+- cliente.py
+- cliente.java
 
-6. Apos ambos jogadores escolherem sua respectiva jogada
-- Escreva "get" para obter o resultado
-- Após ambos jogadores olharem o resultado, a connexão é rompida. Volta ao passo 1.
+O jogo consiste em 15 rodadas, onde uma rodada consistem em uma partida onde não houve empate!
+
+Essa trabalho busca apresentar como utilizando sockets, podemos communicar entre linguagens de programação diferentes.
 
 Observação:
-- O seu nome é aleatorio
-- A qualquer momento, se escrever 'exit' terminará o cliente, além disso pode inclusive terminar o servidor dependendo do contexto em que usa.
-- Para ver os resultados passados, a qualquer momento pode escrever "results" no terminal e obterá os histórico de partidas acumulado no servidor para aquele usuário.
+
+- No terminal onde roda game.py, observará a visão geral (jogada dos outros jogadores e resultados)
+- Associado a cada processo temos um nome aleatório que o servidor usa como referência
+- O servidor guarda os resultados de tudo em um banco sql
+- O cliente python armazena os resultados em um banco sql
+- Já o cliente java não precisa armazenar em um banco pois a heurística apenas analisa e compara com a ultima jogada.
