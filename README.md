@@ -10,6 +10,8 @@ Temos dois bots, um em python, cuja heurística consistem em verificar qual a te
 
 O outro bot em java utiliza uma heurística apresentada nesse artigo:
 
+https://medium.com/street-science/how-to-use-science-to-win-at-rock-paper-scissors-f2f0a67d8fc6#:~:text=The%20Winning%20Strategy%20For%20Rock%2DPaper%2DScissors&text=Here's%20the%20winning%20strategy%20in,with%20in%20the%20current%20round.
+
 Para iniciar o jogo basta rodar o
 
 - cliente.py
